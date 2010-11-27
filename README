@@ -1,0 +1,14 @@
+This is a very simple Arduino HMI for grbl. It links to my fork of grbl and provides an LCD displaying position and a PS2 controller to give some control over manual operations.
+
+To use: place these files in a directory called grbl_hmi and open the grbl_hmi.pde in the Arduino IDE. The code uses the LCD and PS2X_interface modules. 
+
+grbl_hmi gets counts from the main grbl code. It needs lc_display.h to give it the sacling between counts and millimetres. The format should be fairly obvious from the code, but see also the i2c.cpp code in the grbl project, which gives the other half of the relationship. The two wire interface, or I2C bus, is used to communicate with grbl. 
+
+Five byte packages are sent to the HMI: the first byte is 0+something for scaling factors, but isn't used, or 128+1, 2, 3, for x,y,z, actual, or 128+4,5,6 for x,y,z target. The grbl side is set up to only send one measurement at a time, to lower the chances of blocking.
+
+On the hmi to grbl, a packet of 4 bytes is requested by grbl, and sent by grbl_hmi as a slave. The first three bytes are x, y, and z in a range of 0-7, while the fourth contains the results of 8 button presses.
+
+To use the PS2 controller: 
+left joystick up-down motion controls Y of mill  
+right joystick left-right motion controls X of mill
+if left button 1 is pushed, X and Y are immobilized, and right joystick up-down controls Z of mill.
