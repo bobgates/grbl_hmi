@@ -1,21 +1,6 @@
-// Wire Slave Receiver
-// by Nicholas Zambetti <http://www.zambetti.com>
-
-// Demonstrates use of the Wire library
-// Receives data as an I2C/TWI slave device
-// Refer to the "Wire Master Writer" example for use with this
-
-// Created 29 March 2006
-
-// This example code is in the public domain.
-
-
 long target[3];
 long position[3];
 float mm_per_step[3];
-
-// char number_buffer[8];  // -XXX.YY
-
 
 #include <Wire.h>
 #include "lc_display.h"
@@ -33,13 +18,12 @@ void setup()
 }
 
 extern char ps2_data[5];      // 3 sliders linearized 0-7: x, y, z, followed by 8 buttons in one byte
+                              // last byte is zero as end marker
 
 #define XVAL 0
 #define YVAL 1
 #define ZVAL 2
 #define BUTTONS 3
-
-
 
 void loop()
 {
@@ -48,44 +32,20 @@ void loop()
   delay(50);
   lcd_report_position();
   ps2_read();
- 
-// Serial.print(ps2_data);
-// Serial.print("\n");
- 
- 
-/* 
-  ps2_data[0]='M';
-  ps2_data[1]=0;
-  ps2_data[2]=1;
-  ps2_data[3]=34;
-  ps2_data[4]=0;
-*/  
-  
-/*  
-  Serial.print("Stick Values:");
-  Serial.print(ps2_data[XVAL], DEC);
-  Serial.print(",");
-  Serial.print(ps2_data[YVAL]+10, DEC);
-  Serial.print(",");
-  Serial.print(ps2_data[ZVAL], DEC);
-  Serial.print(",");
-  Serial.print(ps2_data[BUTTONS], DEC);
-  Serial.print(",");
-  Serial.println(ps2_data[4], DEC);
-*/  
-  
-  
-  /*
-  for(i=0;i<3;i++){
-    Serial.print((char)('X'+i));
-    Serial.print(": ");
-    format_measurement(target[i]);
-    Serial.print("  :  ");
-    format_measurement(position[i]);
-    Serial.println("");
+
+  // For serial debugging enable the following lines:
+  if (ps2_data[0]|ps2_data[1]|ps2_data[2]|ps2_data[3]){
+    Serial.print("Stick Values:");
+    Serial.print(ps2_data[XVAL], DEC);
+    Serial.print(",");
+    Serial.print(ps2_data[YVAL], DEC);
+    Serial.print(",");
+    Serial.print(ps2_data[ZVAL], DEC);
+    Serial.print(",");
+    Serial.print(ps2_data[BUTTONS], DEC);
+    Serial.print(",");
+    Serial.println(ps2_data[4], DEC);
   }
-  Serial.println("");
-  */
 }
 
 void format_measurement(long value)
@@ -150,7 +110,7 @@ void receiveEvent(int howMany)
 
 void requestEvent()
 {
-  Wire.send((uint8_t *) ps2_data,4);  // Must use this .send, because the one
+  Wire.send((uint8_t *) ps2_data, 4);  // Must use this .send, because the one
                                       // that takes char* won't transmit a data
                                       // byte of zero.
                         // respond with message of 4 bytes
@@ -162,5 +122,5 @@ void requestEvent()
   Wire.send(4);
 */
 
-  //Serial.println("Tx");                     
+  Serial.println("Tx");                     
 }

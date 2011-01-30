@@ -1,15 +1,6 @@
 //*************************************************************************************
 // include the library code:
 #include <LiquidCrystal.h>
-//#include <WProgram.h>  //all things wiring / arduino
-#include "lc_display.h"
-// 
-#define LCD_DB0 	10			// Using Ardiuno numbering, not port numbering
-#define LCD_DB1	11				
-#define LCD_DB2	12
-#define LCD_DB3	13
-#define LCD_ENABLE	9
-#define LCD_RS 	8
 
 
 // initialize the library with the numbers of the interface pins
@@ -55,13 +46,19 @@ void lcd_init() {
 }
 
 
-void lcd_print_count_as_mm(float count)
+void lcd_print_count_as_mm(float count, char axis)
 {
 	long whole;
 	long fraction;
 	float answer;
 	
-	answer = count*DEFAULT_UM_PER_STEP;
+       if (axis==X_AXIS){
+            answer = count*DEFAULT_X_UM_PER_STEP;
+        } else if (axis==Y_AXIS){
+            answer = count*DEFAULT_Y_UM_PER_STEP;
+        } else if (axis==Z_AXIS){
+            answer = count*DEFAULT_Z_UM_PER_STEP;
+        }
 	whole = round(answer/10.0);
 	fraction = abs(whole) % 100;
 	whole = whole/100;
@@ -90,13 +87,13 @@ void lcd_report_position(void)
 
 	switch (pos_line){
 	case 0:  lcd.setCursor(1, 0);
-			 lcd_print_count_as_mm(position[0]);
-			 break;
+			 lcd_print_count_as_mm(position[0], X_AXIS);
+                          break;
 	case 1:  lcd.setCursor(1, 1);
-			 lcd_print_count_as_mm(position[1]);
+			 lcd_print_count_as_mm(position[1], Y_AXIS);
 			 break;
 	case 2:  lcd.setCursor(10, 0);
-			 lcd_print_count_as_mm(position[2]);
+			 lcd_print_count_as_mm(position[2], Z_AXIS);
 			 break;
 	}
 	pos_line++;
